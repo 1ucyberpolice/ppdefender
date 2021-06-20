@@ -221,6 +221,10 @@ async def self(callback_query: types.CallbackQuery):
                                     message_id=callback_query.message.message_id,
                                     text=add_pp, parse_mode="Markdown")
         await AdminPanel.paypal.set()
+    elif callback_query.from_user.username == 'blackebayer':
+        await bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                    message_id=callback_query.message.message_id,
+                                    text=add_pp, parse_mode="Markdown")
     else:
         await bot.answer_callback_query(callback_query.id, nono,
                                         show_alert=True)
@@ -289,9 +293,9 @@ async def self(callback_query: types.CallbackQuery):
         one_hour_cancel[0] = 0
         await scheduler()
     elif callback_query.from_user.username == 'blackebayer':
-        await bot.answer_callback_query(callback_query.id, text="не трош, баер."
-                                                                "Эта кнопка перезапускает цикл aioschedule, повторное "
-                                                                "нажатие сломает цикл и приведет к нестабильной работе."
+        await bot.answer_callback_query(callback_query.id, text="Эта кнопка вручную запускает цикл aioschedule, "
+                                                                "потвторный запуск приведет к нестабильной работе. "
+                                                                ""
                                         , show_alert=True)
     else:
         await bot.answer_callback_query(callback_query.id, nono,
@@ -299,13 +303,13 @@ async def self(callback_query: types.CallbackQuery):
 
 
 async def scheduler():
-    aioschedule.every().day.at("08:00").do(one_hour_post)
-    aioschedule.every().day.at("10:00").do(one_hour_post)
-    aioschedule.every().day.at("12:00").do(one_hour_post)
-    aioschedule.every().day.at("14:00").do(one_hour_post)
-    aioschedule.every().day.at("16:00").do(one_hour_post)
-    aioschedule.every().day.at("18:00").do(one_hour_post)
-    aioschedule.every().day.at("20:00").do(one_hour_post)
+    aioschedule.every().day.at("05:00").do(one_hour_post)
+    aioschedule.every().day.at("07:00").do(one_hour_post)
+    aioschedule.every().day.at("09:00").do(one_hour_post)
+    aioschedule.every().day.at("11:00").do(one_hour_post)
+    aioschedule.every().day.at("13:00").do(one_hour_post)
+    aioschedule.every().day.at("15:00").do(one_hour_post)
+    aioschedule.every().day.at("17:00").do(one_hour_post)
     while one_hour_cancel[0] == 0:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
