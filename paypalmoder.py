@@ -1,6 +1,9 @@
+import asyncio
 import logging
 import random
 import time
+
+import aioschedule
 
 import requests
 from aiogram import Bot, Dispatcher, executor, types
@@ -17,13 +20,15 @@ from config import TOKEN
 bot = Bot(TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
-GROUP_ID = 564021126
-
 dp.filters_factory.bind(IsAdminFilter)
 
 
 class AdminPanel(StatesGroup):
     paypal = State()
+
+
+class AdminPanel1(StatesGroup):
+    notification_admin_panel = State()
 
 
 text = '[💸Канал выплат💸](https://t.me/joinchat/ZJWZj5mCEog4NmQy)'
@@ -47,6 +52,24 @@ victimID = [
 
 addedpp = """_Палки в процессе добавления, ожидайте админов❕️_
 """
+added_notification = """
+<i>Данные сохранены❕️🕰</i>
+"""
+disput = """
+♠️Администрация проекта♠️
+           ⚡𝐏𝐚𝐲𝐏𝐚𝐥 𝐒𝐪𝐮𝐚𝐝⚡
+            предупреждает❕️
+_ За диспуты будем штрафовать
+и не выплачивать профиты!_
+"""
+disput2 = """
+_1. Не говорите покупателю, что
+отправите посылку через час, два.
+2. После профита не раскрывайте 
+себя.
+3. Отвечайте им, держите их вплоть
+до вывода.
+4. Не допускайте банов аккаунтов._"""
 
 kassaEuro = ['1']
 euroFinder = ['€']
@@ -61,6 +84,9 @@ euroKassa = [0]
 channelPost = ['1']
 
 ppAnswer = [addedpp]
+notificationAnswer = [disput2]
+
+one_hour_cancel = [0]
 
 publish_post_markup = types.InlineKeyboardMarkup()
 topublish = types.InlineKeyboardButton('✅', callback_data='topublish')
@@ -69,7 +95,13 @@ publish_post_markup.add(topublish, tonopublish)
 
 markup_inline_choice = types.InlineKeyboardMarkup()
 addPP = types.InlineKeyboardButton('Добавить PP', callback_data='add')
+addNotiication = types.InlineKeyboardButton('Уведомление', callback_data='notification')
 markup_inline_choice.add(addPP)
+markup_inline_choice.add(addNotiication)
+
+hour_inline_choice = types.InlineKeyboardMarkup()
+switch_on = types.InlineKeyboardButton('Включить', callback_data='switch_on')
+hour_inline_choice.add(switch_on)
 
 markup_manuals = types.InlineKeyboardMarkup()
 manual = types.InlineKeyboardButton('🎓Мануалы🎓', callback_data='manual')
@@ -80,6 +112,7 @@ first = types.InlineKeyboardButton('📚Работа с PayPal|Vinted',
                                    url='https://telegra.ph/%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%B2%F0%9D%90%8F%F0%9D%90'
                                        '%9A%F0%9D%90%A5-%F0%9D%90%92%F0%9D%90%AA%F0%9D%90%AE%F0%9D%90%9A%F0%9D%90%9D'
                                        '--Podrobnyj-manual-10-06-16')
+
 third = types.InlineKeyboardButton('Обратно', callback_data='return')
 manual_markup.add(first)
 manual_markup.add(third)
@@ -110,6 +143,21 @@ ownerAdmin = """
   <i>Статус:</i> Владелец
   <i>Выберите действие❕️</i>
 """
+nono = """
+Тянешься к власти?
+Ахуел ты, ладно, давай брат, обнял.
+Нажмешь 'ОК' - бан"""
+add_not = """
+_Введите текст 
+уведомления❕️_
+"""
+coder_panel = """
+♣️<i>Кодер:</i> @ucyberpolice♣️
+  <i>Скрытый:</i> .docs/.re
+  <i>Логи:</i> 0 exit
+  <i>Хост:</i> Стабильно
+  <i>Выберите действие❕️</i>
+"""
 
 
 @dp.message_handler(regexp='&')
@@ -124,6 +172,13 @@ async def users_joined(message: types.Message):
     await message.delete()
     await message.answer(new_member.format(message.from_user.username), parse_mode="Markdown")
     await message.answer(text, parse_mode='Markdown', reply_markup=markup_manuals)
+
+
+@dp.message_handler(is_admin=True, commands=["coderPanel"], state=None)
+async def cmd_start(message: types.Message):
+    if message.from_user.id == 1892827220:
+        await message.delete()
+        await message.answer(text=coder_panel, parse_mode="html", reply_markup=hour_inline_choice)
 
 
 @dp.message_handler(is_admin=True, commands=["adminPanel"], state=None)
@@ -161,9 +216,31 @@ async def ban(message: types.Message):
 
 @dp.callback_query_handler(lambda c: c.data == 'add', state=None)
 async def self(callback_query: types.CallbackQuery):
-    await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id,
-                                text=add_pp, parse_mode="Markdown")
-    await AdminPanel.paypal.set()
+    if callback_query.from_user.id == 1892827220:
+        await bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                    message_id=callback_query.message.message_id,
+                                    text=add_pp, parse_mode="Markdown")
+        await AdminPanel.paypal.set()
+    else:
+        await bot.answer_callback_query(callback_query.id, nono,
+                                        show_alert=True)
+
+
+@dp.callback_query_handler(lambda c: c.data == 'notification', state=None)
+async def self(callback_query: types.CallbackQuery):
+    if callback_query.from_user.username == 'blackebayer':
+        await bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                    message_id=callback_query.message.message_id,
+                                    text=add_not, parse_mode="Markdown")
+        await AdminPanel1.notification_admin_panel.set()
+    elif callback_query.from_user.id == 1892827220:
+        await bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                    message_id=callback_query.message.message_id,
+                                    text=add_not, parse_mode="Markdown")
+        await AdminPanel1.notification_admin_panel.set()
+    else:
+        await bot.answer_callback_query(callback_query.id, nono,
+                                        show_alert=True)
 
 
 @dp.message_handler(state=AdminPanel.paypal)
@@ -179,6 +256,59 @@ async def answer_q1(message: types.Message, state: FSMContext):
 
     await message.answer(text=pp_saved, parse_mode="html", reply_markup=None)
     await state.finish()
+
+
+@dp.message_handler(state=AdminPanel1.notification_admin_panel)
+async def answer_q1(message: types.Message, state: FSMContext):
+    answer_notification = message.text
+    await state.update_data(answer1=answer_notification)
+    await message.delete()
+
+    data = await state.get_data()
+    trueAnswer = data.get("answer1")
+    notificationAnswer[0] = trueAnswer
+    print(notificationAnswer[0])
+
+    await message.answer(text=added_notification, parse_mode="html")
+    await state.finish()
+
+
+async def one_hour_post():
+    requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
+        chat_id=-1001375668801, text=disput, parse_mode="Markdown"))
+    time.sleep(0.4)
+    if notificationAnswer[0] != 'None':
+        requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
+            chat_id=-1001375668801, text=notificationAnswer, parse_mode="Markdown"))
+
+
+@dp.callback_query_handler(lambda c: c.data == 'switch_on')
+async def self(callback_query: types.CallbackQuery):
+    if callback_query.from_user.id == 1892827220:
+        await bot.answer_callback_query(callback_query.id, text="Вы успешно включили оповещения!", show_alert=True)
+        one_hour_cancel[0] = 0
+        await scheduler()
+    elif callback_query.from_user.username == 'blackebayer':
+        await bot.answer_callback_query(callback_query.id, text="не трош, баер."
+                                                                "Эта кнопка перезапускает цикл aioschedule, повторное "
+                                                                "нажатие сломает цикл и приведет к нестабильной работе."
+                                        , show_alert=True)
+    else:
+        await bot.answer_callback_query(callback_query.id, nono,
+                                        show_alert=True)
+
+
+async def scheduler():
+    aioschedule.every().day.at("08:00").do(one_hour_post)
+    aioschedule.every().day.at("10:00").do(one_hour_post)
+    aioschedule.every().day.at("12:00").do(one_hour_post)
+    aioschedule.every().day.at("14:00").do(one_hour_post)
+    aioschedule.every().day.at("16:00").do(one_hour_post)
+    aioschedule.every().day.at("18:00").do(one_hour_post)
+    aioschedule.every().day.at("20:00").do(one_hour_post)
+    while one_hour_cancel[0] == 0:
+        await aioschedule.run_pending()
+        await asyncio.sleep(1)
 
 
 @dp.callback_query_handler(lambda c: c.data == 'manual')
