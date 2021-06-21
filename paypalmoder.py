@@ -187,7 +187,7 @@ async def cmd_start(message: types.Message):
     if message.from_user.id == 1892827220:
         await message.answer(coderAdmin, parse_mode="html", reply_markup=markup_inline_choice)
 
-    elif message.from_user.username == 'blackebayer':
+    elif message.from_user.id == 999503141:
         await message.answer(ownerAdmin, parse_mode="html", reply_markup=markup_inline_choice)
 
     else:
@@ -221,7 +221,7 @@ async def self(callback_query: types.CallbackQuery):
                                     message_id=callback_query.message.message_id,
                                     text=add_pp, parse_mode="Markdown")
         await AdminPanel.paypal.set()
-    elif callback_query.from_user.username == 'blackebayer':
+    elif callback_query.from_user.id == 999503141:
         await bot.edit_message_text(chat_id=callback_query.message.chat.id,
                                     message_id=callback_query.message.message_id,
                                     text=add_pp, parse_mode="Markdown")
@@ -232,7 +232,7 @@ async def self(callback_query: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda c: c.data == 'notification', state=None)
 async def self(callback_query: types.CallbackQuery):
-    if callback_query.from_user.username == 'blackebayer':
+    if callback_query.from_user.id == 999503141:
         await bot.edit_message_text(chat_id=callback_query.message.chat.id,
                                     message_id=callback_query.message.message_id,
                                     text=add_not, parse_mode="Markdown")
@@ -289,10 +289,10 @@ async def one_hour_post():
 @dp.callback_query_handler(lambda c: c.data == 'switch_on')
 async def self(callback_query: types.CallbackQuery):
     if callback_query.from_user.id == 1892827220:
-        await bot.answer_callback_query(callback_query.id, text="Вы успешно включили оповещения!", show_alert=True)
+        await bot.answer_callback_query(callback_query.id, text="Цикл aioschedule успешно запущен!", show_alert=True)
         one_hour_cancel[0] = 0
         await scheduler()
-    elif callback_query.from_user.username == 'blackebayer':
+    elif callback_query.from_user.id == 999503141:
         await bot.answer_callback_query(callback_query.id, text="Эта кнопка вручную запускает цикл aioschedule, "
                                                                 "потвторный запуск приведет к нестабильной работе. "
                                                                 ""
