@@ -17,6 +17,7 @@ storage = MemoryStorage()
 
 logging.basicConfig(level=logging.INFO)
 from config import TOKEN
+
 bot = Bot(TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
@@ -154,11 +155,11 @@ _Введите текст
 coder_panel = """
 ♣️<i>Кодер:</i> @ucyberpolice♣️
   <i>Скрытый:</i> .docs/.re
-  <i>Логи:</i> 0 exit
-  <i>Хост:</i> Стабильно
-  <i>Выберите действие❕️</i>
+  <i>Логи:</i> clear
+  <i>Хост:</i> stably
 """
 
+adminID = [1892827220, 999503141]
 
 @dp.message_handler(regexp='&')
 async def personal(message: types.Message):
@@ -176,7 +177,7 @@ async def users_joined(message: types.Message):
 
 @dp.message_handler(is_admin=True, commands=["coderPanel"], state=None)
 async def cmd_start(message: types.Message):
-    if message.from_user.id == 1892827220:
+    if message.from_user.id in adminID:
         await message.delete()
         await message.answer(text=coder_panel, parse_mode="html", reply_markup=hour_inline_choice)
 
@@ -184,11 +185,8 @@ async def cmd_start(message: types.Message):
 @dp.message_handler(is_admin=True, commands=["adminPanel"], state=None)
 async def cmd_start(message: types.Message):
     await message.delete()
-    if message.from_user.id == 1892827220:
+    if message.from_user.id in adminID:
         await message.answer(coderAdmin, parse_mode="html", reply_markup=markup_inline_choice)
-
-    elif message.from_user.id == 999503141:
-        await message.answer(ownerAdmin, parse_mode="html", reply_markup=markup_inline_choice)
 
     else:
         await message.answer('♣️Админ: @{0}♣️\n'
@@ -197,7 +195,7 @@ async def cmd_start(message: types.Message):
 
 
 @dp.message_handler(commands=["available_pp"])
-async def avaliable(message: types.Message):
+async def available(message: types.Message):
     await message.answer('🍀Доступные палки:🍀\n'
                          + ppAnswer[0], parse_mode="Markdown")
 
@@ -216,15 +214,11 @@ async def ban(message: types.Message):
 
 @dp.callback_query_handler(lambda c: c.data == 'add', state=None)
 async def self(callback_query: types.CallbackQuery):
-    if callback_query.from_user.id == 1892827220:
+    if callback_query.from_user.id in adminID:
         await bot.edit_message_text(chat_id=callback_query.message.chat.id,
                                     message_id=callback_query.message.message_id,
                                     text=add_pp, parse_mode="Markdown")
         await AdminPanel.paypal.set()
-    elif callback_query.from_user.id == 999503141:
-        await bot.edit_message_text(chat_id=callback_query.message.chat.id,
-                                    message_id=callback_query.message.message_id,
-                                    text=add_pp, parse_mode="Markdown")
     else:
         await bot.answer_callback_query(callback_query.id, nono,
                                         show_alert=True)
@@ -232,12 +226,7 @@ async def self(callback_query: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda c: c.data == 'notification', state=None)
 async def self(callback_query: types.CallbackQuery):
-    if callback_query.from_user.id == 999503141:
-        await bot.edit_message_text(chat_id=callback_query.message.chat.id,
-                                    message_id=callback_query.message.message_id,
-                                    text=add_not, parse_mode="Markdown")
-        await AdminPanel1.notification_admin_panel.set()
-    elif callback_query.from_user.id == 1892827220:
+    if callback_query.from_user.id in adminID:
         await bot.edit_message_text(chat_id=callback_query.message.chat.id,
                                     message_id=callback_query.message.message_id,
                                     text=add_not, parse_mode="Markdown")
@@ -298,7 +287,8 @@ async def self(callback_query: types.CallbackQuery):
                                                                 ""
                                         , show_alert=True)
     else:
-        await bot.answer_callback_query(callback_query.id, nono,
+        await bot.answer_callback_query(callback_query.id, text="Эта кнопка вручную запускает цикл aioschedule, "
+                                                                "потвторный запуск приведет к нестабильной работе. ",
                                         show_alert=True)
 
 
@@ -338,37 +328,7 @@ async def personal(message: types.Message):
 @dp.message_handler()
 async def kassa(message: types.Message):
     if message.chat.type == types.ChatType.PRIVATE:
-        if message.from_user.id == 1892827220:
-            channelPost[0] = message.text
-
-            words = message.text.split()
-            for word in words:
-                for x in euroFinder:
-                    if word.count(x):
-                        print('Yep. "%s" contains characters from "%s" item.' % (word, x))
-                        kassaEuro[0] = word
-                        euroNoSymbol[0] = int(kassaEuro[0].replace('€', ''))
-                        print(euroNoSymbol[0])
-                        # записываем результат в переменную типа инт
-                        euroResult[0] += int(euroNoSymbol[0])
-                        # перезапись рекорда, если переменнаяНоуСимбол больше переменной рекорд
-                        if int(euroResult[0]) > int(recordEuro[0]):
-                            recordEuro[0] = int(euroResult[0])
-
-            for word in words:
-                for x in userFinder:
-                    if word.count(x):
-                        print('Yep. "%s" contains characters from "%s" item.' % (word, x))
-                        userSymbol[0] = word
-                        print(userSymbol[0])
-
-            await message.delete()
-
-            if channelPost != '1':
-                await message.answer(channelPost[0], reply_markup=publish_post_markup)
-
-    if message.chat.type == types.ChatType.PRIVATE:
-        if message.from_user.username == 'blackebayer':
+        if message.from_user.id in adminID:
             channelPost[0] = message.text
 
             words = message.text.split()
@@ -402,7 +362,7 @@ async def kassa(message: types.Message):
         await message.answer('🍀Статистика за сегодня:🍀\n'
                              '🐘Профитов: ' + str(profits[0]) + '🐘\n'
                              '💸На сумму: ' + str(euroResult[0]) + '€💸\n'
-                              '❗️Рекорд: ' + str(
+                             '❗️Рекорд: ' + str(
             recordEuro[0]) + '€❗️\n')
 
     if 'заряду' in message.text:
@@ -428,8 +388,8 @@ async def self(callback_query: types.CallbackQuery):
 
     requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
         chat_id=-1001375668801, text='⚡️NEW PROFIT⚡️\n'
-                                 '💶На сумму: ' + str(euroNoSymbol[0]) + '€💶\n'
-                                                                         'Воркер: ' + userSymbol[0]))
+                                     '💶На сумму: ' + str(euroNoSymbol[0]) + '€💶\n'
+                                                                             'Воркер: ' + userSymbol[0]))
     requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
         chat_id=-1001375668801, text=text, parse_mode='Markdown'))
     profits[0] += 1
