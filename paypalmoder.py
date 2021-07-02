@@ -110,13 +110,32 @@ markup_manuals.add(manual)
 
 manual_markup = types.InlineKeyboardMarkup()
 first = types.InlineKeyboardButton('📚Работа с PayPal|Vinted',
-                                   url='https://telegra.ph/%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%B2%F0%9D%90%8F%F0%9D%90'
-                                       '%9A%F0%9D%90%A5-%F0%9D%90%92%F0%9D%90%AA%F0%9D%90%AE%F0%9D%90%9A%F0%9D%90%9D'
-                                       '--Podrobnyj-manual-10-06-16')
+                                   url='https://telegra.ph/%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%B2%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%A5-%F0%9D%90%84%F0%9D%90%A6%F0%9D%90%A9%F0%9D%90%A2%F0%9D%90%AB%F0%9D%90%9E--Manual-10-07-01')
 
 third = types.InlineKeyboardButton('Обратно', callback_data='return')
 manual_markup.add(first)
 manual_markup.add(third)
+
+for_top_worker_markup = types.InlineKeyboardMarkup()
+top_worker_panel1 = types.InlineKeyboardButton('👁Привилегии', callback_data='privilegii')
+top_worker_panel2 = types.InlineKeyboardButton('🔰Парсер', url='https://t.me/paypalparcer_bot')
+for_top_worker_markup.add(top_worker_panel1)
+for_top_worker_markup.add(top_worker_panel2)
+
+return_privilegii = types.InlineKeyboardMarkup()
+return_privilegi1 = types.InlineKeyboardButton('Обратно🔙', callback_data='return3')
+return_privilegii.add(return_privilegi1)
+
+new_member_in_main = """
+💠Новый топ-воркер!💠 
+Профиль: @{0}
+
+_Для участников данного 
+чата действуют особые 
+привилегии❕_
+
+💷Удачного скама!
+ """
 
 new_member = """
 🍀К чату присоединился воркер!🍀   
@@ -158,6 +177,14 @@ coder_panel = """
   <i>Логи:</i> clear
   <i>Хост:</i> stably
 """
+privilegii = """
+⚡️𝐏𝐚𝐲𝐏𝐚𝐥 𝐄𝐦𝐩𝐢𝐫𝐞⚡️
+Привилегии топ-воркерам:
+   <i>- Ставка 60%,
+     Личный парсер,
+     Специальные
+     возможности</i>
+"""
 
 adminID = [1892827220, 999503141]
 
@@ -170,9 +197,15 @@ async def personal(message: types.Message):
 
 @dp.message_handler(content_types=['new_chat_members'])
 async def users_joined(message: types.Message):
-    await message.delete()
-    await message.answer(new_member.format(message.from_user.username), parse_mode="Markdown")
-    await message.answer(text, parse_mode='Markdown', reply_markup=markup_manuals)
+    if message.chat.id == -1001586801239:
+        await message.delete()
+        await message.answer(new_member_in_main.format(message.from_user.username), parse_mode="Markdown")
+        await message.answer(text, parse_mode='Markdown', reply_markup=for_top_worker_markup)
+
+    elif message.chat.id == -1001375668801:
+        await message.delete()
+        await message.answer(new_member.format(message.from_user.username), parse_mode="Markdown")
+        await message.answer(text, parse_mode='Markdown', reply_markup=markup_manuals)
 
 
 @dp.message_handler(is_admin=True, commands=["coderPanel"], state=None)
@@ -185,18 +218,19 @@ async def cmd_start(message: types.Message):
 @dp.message_handler(is_admin=True, commands=["adminPanel"], state=None)
 async def cmd_start(message: types.Message):
     await message.delete()
-    if message.from_user.id in adminID:
+    if message.from_user.id == 1892827220:
         await message.answer(coderAdmin, parse_mode="html", reply_markup=markup_inline_choice)
-
-    else:
-        await message.answer('♣️Админ: @{0}♣️\n'
-                             'Выберите действие:'.format(message.from_user.username),
-                             reply_markup=markup_inline_choice)
+    elif message.from_user.id == 999503141:
+        await message.answer(ownerAdmin, parse_mode="html", reply_markup=markup_inline_choice)
+    #else:
+        #await message.answer('♣️Админ: @{0}♣️\n'
+                             #'Выберите действие:'.format(message.from_user.username),
+                             #reply_markup=markup_inline_choice)
 
 
 @dp.message_handler(commands=["available_pp"])
 async def available(message: types.Message):
-    await message.answer('🍀Доступные палки:🍀\n'
+    await message.answer('💠Доступные палки:💠\n'
                          + ppAnswer[0], parse_mode="Markdown")
 
 
@@ -210,6 +244,20 @@ async def ban(message: types.Message):
     await message.bot.kick_chat_member(chat_id=message.chat.id, user_id=message.reply_to_message.from_user.id)
 
     await message.reply_to_message.reply('⚫️Воркер забанен!⚫️')
+
+
+@dp.callback_query_handler(lambda c: c.data == 'privilegii', state=None)
+async def self(callback_query: types.CallbackQuery):
+    await bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                message_id=callback_query.message.message_id,
+                                text=privilegii, parse_mode="html", reply_markup=return_privilegii)
+
+
+@dp.callback_query_handler(lambda c: c.data == 'return3', state=None)
+async def self(callback_query: types.CallbackQuery):
+    await bot.edit_message_text(chat_id=callback_query.message.chat.id,
+                                message_id=callback_query.message.message_id,
+                                text=text, parse_mode='Markdown', reply_markup=for_top_worker_markup)
 
 
 @dp.callback_query_handler(lambda c: c.data == 'add', state=None)
