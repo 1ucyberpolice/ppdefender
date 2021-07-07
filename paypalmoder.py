@@ -111,9 +111,10 @@ markup_manuals.add(manual)
 manual_markup = types.InlineKeyboardMarkup()
 first = types.InlineKeyboardButton('📚Работа с PayPal|Vinted',
                                    url='https://telegra.ph/%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%B2%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%A5-%F0%9D%90%84%F0%9D%90%A6%F0%9D%90%A9%F0%9D%90%A2%F0%9D%90%AB%F0%9D%90%9E--Manual-10-07-01')
-
+second = types.InlineKeyboardButton('📚Трек-код DNL', url='https://telegra.ph/%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%B2%F0%9D%90%8F%F0%9D%90%9A%F0%9D%90%A5-%F0%9D%90%84%F0%9D%90%A6%F0%9D%90%A9%F0%9D%90%A2%F0%9D%90%AB%F0%9D%90%9ETrek-kod-DNL-07-03')
 third = types.InlineKeyboardButton('Обратно', callback_data='return')
 manual_markup.add(first)
+manual_markup.add(second)
 manual_markup.add(third)
 
 for_top_worker_markup = types.InlineKeyboardMarkup()
@@ -197,7 +198,7 @@ async def personal(message: types.Message):
 
 @dp.message_handler(content_types=['new_chat_members'])
 async def users_joined(message: types.Message):
-    if message.chat.id == -1001586801239:
+    if message.chat.id == -1001487558891:
         await message.delete()
         await message.answer(new_member_in_main.format(message.from_user.username), parse_mode="Markdown")
         await message.answer(text, parse_mode='Markdown', reply_markup=for_top_worker_markup)
@@ -407,6 +408,7 @@ async def kassa(message: types.Message):
 
     if 'касса' in message.text:
         print(message.chat.id)
+        print(message.from_user.id)
         await message.answer('🍀Статистика за сегодня:🍀\n'
                              '🐘Профитов: ' + str(profits[0]) + '🐘\n'
                              '💸На сумму: ' + str(euroResult[0]) + '€💸\n'
@@ -416,7 +418,7 @@ async def kassa(message: types.Message):
     if 'заряду' in message.text:
         await message.answer_sticker('CAACAgIAAxkBAAECaFBgwSqxwBgXUxDQwb6P0GcO3sTkygACRQADZtYKO1dsr_MdF_EUHwQ')
 
-    if message.from_user.id == 1892827220:
+    if message.from_user.id == 1695283624:
         if message.from_user.last_name == '☠️':
             victimID[0] = message.text
             print(victimID[0])
@@ -436,6 +438,11 @@ async def self(callback_query: types.CallbackQuery):
 
     requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
         chat_id=-1001375668801, text='⚡️NEW PROFIT⚡️\n'
+                                     '💶На сумму: ' + str(euroNoSymbol[0]) + '€💶\n'
+                                                                             'Воркер: ' + userSymbol[0]))
+
+    requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
+        chat_id=-1001487558891, text='⚡️NEW PROFIT⚡️\n'
                                      '💶На сумму: ' + str(euroNoSymbol[0]) + '€💶\n'
                                                                              'Воркер: ' + userSymbol[0]))
     requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
