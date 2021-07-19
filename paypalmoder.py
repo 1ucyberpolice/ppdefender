@@ -500,7 +500,7 @@ async def self(callback_query: types.CallbackQuery):
                                          '<i>Твой активный PayPal</i>: \n'
                                     .format(callback_query.message.chat.id) + pp, parse_mode="html"
                                     , reply_markup=paypal_profit)
-        for id in me_bayer:
+        for id in adminID:
             await bot.send_message(id, text='<i>Воркер:</i> @{0}\n'
                                             '<i>Взял PayPal:</i> '.format(
                 callback_query.message.chat.username) + pp,
